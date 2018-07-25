@@ -21,6 +21,7 @@ use LightSaml\Validator\Model\Assertion\AssertionTimeValidatorInterface;
 use LightSaml\Validator\Model\Assertion\AssertionValidatorInterface;
 use LightSaml\Validator\Model\NameId\NameIdValidatorInterface;
 use LightSaml\Validator\Model\Signature\SignatureValidatorInterface;
+use LightSaml\Logout\Resolver\Logout\LogoutSessionResolverInterface;
 
 class ServiceContainer implements ServiceContainerInterface
 {
@@ -51,6 +52,9 @@ class ServiceContainer implements ServiceContainerInterface
     /** @var SessionProcessorInterface */
     private $sessionProcessor;
 
+    /** @var LogoutSessionResolverInterface */
+    private $logoutSessionResolver;
+
     /**
      * @param AssertionValidatorInterface     $assertionValidator
      * @param AssertionTimeValidatorInterface $assertionTimeValidator
@@ -61,6 +65,7 @@ class ServiceContainer implements ServiceContainerInterface
      * @param SignatureValidatorInterface     $signatureValidator
      * @param CredentialResolverInterface     $credentialResolver
      * @param SessionProcessorInterface       $sessionProcessor
+     * @param LogoutSessionResolverInterface  $logoutSessionResolver
      */
     public function __construct(
         AssertionValidatorInterface $assertionValidator,
@@ -71,7 +76,8 @@ class ServiceContainer implements ServiceContainerInterface
         BindingFactoryInterface $bindingFactory,
         SignatureValidatorInterface $signatureValidator,
         CredentialResolverInterface $credentialResolver,
-        SessionProcessorInterface $sessionProcessor
+        SessionProcessorInterface $sessionProcessor,
+        LogoutSessionResolverInterface $logoutSessionResolver
     ) {
         $this->assertionValidator = $assertionValidator;
         $this->assertionTimeValidator = $assertionTimeValidator;
@@ -82,6 +88,7 @@ class ServiceContainer implements ServiceContainerInterface
         $this->signatureValidator = $signatureValidator;
         $this->credentialResolver = $credentialResolver;
         $this->sessionProcessor = $sessionProcessor;
+        $this->logoutSessionResolver = $logoutSessionResolver;
     }
 
     /**
@@ -149,11 +156,11 @@ class ServiceContainer implements ServiceContainerInterface
     }
 
     /**
-     * @return \LightSaml\Resolver\Logout\LogoutSessionResolverInterface
+     * @return LogoutSessionResolverInterface
      */
     public function getLogoutSessionResolver()
     {
-        throw new \LogicException('Not implemented');
+        return $this->logoutSessionResolver;
     }
 
     /**

@@ -58,6 +58,7 @@ services:
             - "@lightsaml.service.signature_validator"
             - "@lightsaml.service.credential_resolver"
             - "@lightsaml.service.session_processor"
+            - "@lightsaml.service.logout_sessions_resolver"
 
     lightsaml.container.own:
         class: LightSaml\SymfonyBridgeBundle\Bridge\Container\OwnContainer

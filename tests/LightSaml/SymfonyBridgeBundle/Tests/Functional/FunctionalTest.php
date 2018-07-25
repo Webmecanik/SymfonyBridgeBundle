@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the LightSAML Symfony Bridge Bundle package.
+ *
+ * (c) Milos Tomic <tmilos@lightsaml.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace LightSaml\SymfonyBridgeBundle\Tests\Functional;
 
 use LightSaml\Binding\BindingFactoryInterface;
@@ -18,6 +27,7 @@ use LightSaml\Resolver\Credential\CredentialResolverInterface;
 use LightSaml\Resolver\Endpoint\EndpointResolverInterface;
 use LightSaml\Resolver\Session\SessionProcessorInterface;
 use LightSaml\Resolver\Signature\SignatureResolverInterface;
+use LightSaml\Logout\Resolver\Logout\LogoutSessionResolverInterface;
 use LightSaml\Store\Credential\CredentialStoreInterface;
 use LightSaml\Store\EntityDescriptor\EntityDescriptorStoreInterface;
 use LightSaml\Store\Id\IdStoreInterface;
@@ -61,7 +71,8 @@ class FunctionalTest extends WebTestCase
         $this->assertInstanceOf(StoreContainerInterface::class, $buildContainer->getStoreContainer());
     }
 
-    public function test_system_container() {
+    public function test_system_container()
+    {
         static::createClient();
         /** @var BuildContainerInterface $buildContainer */
         $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
@@ -127,9 +138,9 @@ class FunctionalTest extends WebTestCase
         $this->assertInstanceOf(BindingFactoryInterface::class, $serviceContainer->getBindingFactory());
         $this->assertInstanceOf(SignatureValidatorInterface::class, $serviceContainer->getSignatureValidator());
         $this->assertInstanceOf(CredentialResolverInterface::class, $serviceContainer->getCredentialResolver());
+        $this->assertInstanceOf(LogoutSessionResolverInterface::class, $serviceContainer->getLogoutSessionResolver());
         $this->assertInstanceOf(SessionProcessorInterface::class, $serviceContainer->getSessionProcessor());
     }
-
 
     public function test_own_container()
     {

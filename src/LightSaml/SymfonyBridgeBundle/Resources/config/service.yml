@@ -73,3 +73,8 @@ services:
         arguments:
             - "@lightsaml.store.sso_state"
             - "@lightsaml.system.time_provider"
+
+    lightsaml.service.logout_sessions_resolver:
+        class: LightSaml\Logout\Resolver\Logout\LogoutSessionResolver
+        arguments:
+            - "@lightsaml.store.sso_state"

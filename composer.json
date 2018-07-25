@@ -23,7 +23,8 @@
         "symfony/framework-bundle": "~2.7|~3.0|~4.0",
         "symfony/dependency-injection": "~2.7|~3.0|~4.0",
         "symfony/yaml": "~2.7|~3.0|~4.0",
-        "lightsaml/lightsaml": "~1.1"
+        "lightsaml/lightsaml": "~1.1",
+        "lightsaml/lightSAML-logout": "~1.0"
     },
     "require-dev": {
         "symfony/browser-kit": "~2.7|~3.0|~4.0",
