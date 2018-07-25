@@ -37,8 +37,8 @@ class ServiceContainerTest extends TestCase
             $this->getMockBuilder(BindingFactoryInterface::class)->getMock(),
             $this->getMockBuilder(SignatureValidatorInterface::class)->getMock(),
             $this->getMockBuilder(CredentialResolverInterface::class)->getMock(),
-            $this->getMockBuilder(LogoutSessionResolverInterface::class)->getMock(),
-            $this->getMockBuilder(SessionProcessorInterface::class)->getMock()
+            $this->getMockBuilder(SessionProcessorInterface::class)->getMock(),
+            $this->getMockBuilder(LogoutSessionResolverInterface::class)->getMock()
         );
     }
 }
