@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -65,6 +66,9 @@ class LightSamlSymfonyBridgeExtension extends Extension
     {
         $factoryReference = new Reference('lightsaml.credential.credential_store_factory');
         $definition = $container->getDefinition('lightsaml.credential.credential_store');
+        if ($this->entityIdIsClass($config)){
+            $this->setEntityId($definition, $config, 2);
+        }
         $this->setFactoryCompatibleWay($definition, $factoryReference, 'buildFromOwnCredentialStore');
     }
 
@@ -83,6 +87,11 @@ class LightSamlSymfonyBridgeExtension extends Extension
     private function configureOwn(ContainerBuilder $container, array $config)
     {
         $container->setParameter('lightsaml.own.entity_id', $config['own']['entity_id']);
+
+        $definition = $container->getDefinition('lightsaml.container.own');
+        if ($this->entityIdIsClass($config)){
+            $this->setEntityId($definition, $config, 2);
+        }
 
         $this->configureOwnEntityDescriptor($container, $config);
         $this->configureOwnCredentials($container, $config);
@@ -113,6 +122,9 @@ class LightSamlSymfonyBridgeExtension extends Extension
                 ->addArgument(null)
                 ->addArgument(new Reference('lightsaml.own.credential_store'))
             ;
+            if ($this->entityIdIsClass($config)){
+                $this->setEntityId($definition, $config, 0);
+            }
             $this->setFactoryCompatibleWay($definition, 'LightSaml\SymfonyBridgeBundle\Factory\OwnEntityDescriptorProviderFactory', 'build');
         }
     }
@@ -124,15 +136,15 @@ class LightSamlSymfonyBridgeExtension extends Extension
         }
 
         foreach ($config['own']['credentials'] as $id => $data) {
-            $definition = new Definition(
-                'LightSaml\Store\Credential\X509FileCredentialStore',
-                [
-                    $config['own']['entity_id'],
-                    $data['certificate'],
-                    $data['key'],
-                    $data['password'],
-                ]
-            );
+            $definition = new Definition('LightSaml\Store\Credential\X509FileCredentialStore');
+            $definition
+                ->addArgument($config['own']['entity_id'])
+                ->addArgument($data['certificate'])
+                ->addArgument($data['key'])
+                ->addArgument($data['password']);
+            if ($this->entityIdIsClass($config)){
+                $this->setEntityId($definition, $config, 0);
+            }
             $definition->addTag('lightsaml.own_credential_store');
             $container->setDefinition('lightsaml.own.credential_store.'.$id, $definition);
         }
@@ -204,5 +216,26 @@ class LightSamlSymfonyBridgeExtension extends Extension
             }
             $definition->setFactoryMethod($method);
         }
+    }
+
+    private function entityIdIsClass($config)
+    {
+        if (class_exists($config['own']['entity_id'])) {
+            $entityId = new \ReflectionClass($config['own']['entity_id']);
+            if ($entityId->hasMethod('get')) {
+                return true;
+            } else {
+                throw new \LogicException(sprintf("Entity class '%s' must have get() function", $config['own']['entity_id']));
+            }
+        }
+
+        return false;
+    }
+
+    private function setEntityId(Definition $definition, $config, $index)
+    {
+        $className = str_replace("\\", "\\\\\\", $config['own']['entity_id']);
+        $argument = new Expression("service('".$className."').get()");
+        $definition->replaceArgument($index, $argument);
     }
 }
